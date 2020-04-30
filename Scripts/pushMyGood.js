@@ -1,3 +1,5 @@
+//Goodしたときに動くメソッドだよ
+//GoodテーブルとStickテーブルに更新をかける？
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
@@ -19,8 +21,30 @@ module.exports = function(req, res){
   var good = new Good();
 
   good.set("userId", userId)
-      .set("stickId", stick)
+      .set("stickId", stickId)
       .save()
-      .then(function(re))
+      .then(function(res){
+        res.status(200)
+           .send("success");
+      })
+      .catch(function(err){
+        res.status(500)
+           .send("Error : " + err);
+      });
+
+  stick.equalTo("objectId", stickId)
+       .fetchAll()
+       .then(function(stick){
+         stick.setIncrement("good", 1);
+         return stick.update();
+       })
+       .then(function(res){
+         res.status(200)
+            .send("success");
+       })
+       .catch(function(err){
+         res.status(500)
+            .send("Error : " + err);
+       });
 
 }
