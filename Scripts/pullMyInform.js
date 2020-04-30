@@ -16,7 +16,7 @@ module.exports = function(req, res){
              .fetchAll()
              .then(function(results){
                res.status(200)
-                  .send("success!");
+                  .json(results);
              })
              .catch(function(err){
                res.status(500)

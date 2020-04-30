@@ -1,6 +1,6 @@
 function saveStick(req, res){
   //日付計算で使う
-  require('moment');
+  var moment = require('moment');
 
   //リクエストボディから受け取る
   var detail = req.body.detail;
@@ -12,7 +12,7 @@ function saveStick(req, res){
 
   //deleteDate作成
   var nowdate = moment();
-  var deleteDate = String(today.add(7, 'd'));
+  var deleteDate = String(nowdate.add(7, 'd'));
 
   //ヘッダーからとる（現時点では不要、権限系のエラーが出てきたら考える）
   //var userName = req.get("username");
@@ -39,8 +39,9 @@ function saveStick(req, res){
            .then(function(res){
              ncmb.File.equalTo("fileName", fileName)
                  .fetchAll()
-                 .then(function(file){
-                   var stampId = file.objectId;
+                 .then(function(files){
+                   var file = files[0];
+                   var stampId = file.get("objectId");
                  })
                  .catch(function(err){
                    res.status(500);

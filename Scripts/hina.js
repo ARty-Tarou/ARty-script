@@ -1,15 +1,6 @@
-//個人情報を変更するときに使用するよ。
-//アルゴリズム未定
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
-  var informs = [];
-  var informs[0] = req.body.userName;
-  var informs[1] = req.body.password;
-  var informs[2] = req.body.mailAddress;
-  var informs[3] = req.body.birthday;
-  var informs[4] = req.body.iconImageId;
-  var informs[5] = req.body.selfIntroduction;
 
   //サブクラスの作成
   var NCMB = require('ncmb');
