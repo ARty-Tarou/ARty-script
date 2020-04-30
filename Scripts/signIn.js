@@ -21,7 +21,7 @@ module.exports = function(req, res){
     ncmb.User.loginWithMailAddress(result[0], password)
         .then(function(data){
           res.status(200)
-             .send("Data : " + data);
+             .send("success!");
         })
         .catch(function(err){
           res.status(401)
@@ -32,7 +32,7 @@ module.exports = function(req, res){
     ncmb.User.login(userIdOrMailAddress, password)
         .then(function(data){
           res.status(200)
-             .send("Data : " + data);
+             .send("success!");
         })
         .catch(function(err){
           res.status(401)
