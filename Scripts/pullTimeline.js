@@ -1,3 +1,5 @@
+//Stickを検索し返すよ
+//resultsで受け取れるのか分からない
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
