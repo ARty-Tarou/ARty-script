@@ -1,3 +1,5 @@
+//Stickを保存するためのスクリプト
+//StampのStickかStampArtのStickかの判断をどうつけるか不明
 function saveStick(req, res){
   //日付計算で使う
   var moment = require('moment');
@@ -23,7 +25,9 @@ function saveStick(req, res){
 
   //サブクラスとインスタンス
   var Stick = ncmb.DataStore('Stick');
+  var MyStamp = ncmb.DataStore('MyStamp');
   var stick = new Stick();
+  var myStamp = new MyStamp();
 
   stick.set("deleteDate", deleteDate)
        .set("detail", detail)
@@ -35,11 +39,22 @@ function saveStick(req, res){
        .save()
        .then(function(stick){
          //console.log("Aman0002");
-         res.status(200).send("success!");
+         //res.status(200).send("success!");
+         myStamp.set("stampName", stampName)
+                .set("userId", userId)
+                .save()
+                .then(function(stick){
+                  res.status(200)
+                     .send("success!");
+                })
+                .catch(function(err){
+                  res.status(500)
+                     .send("myStamp save error! Error : " + err);
+                })
        })
        .catch(function(err){
-         //console.log("Aman001");
-         res.status(500).send("Error : " + err);
+         res.status(500)
+            .send("stick save error! Error : " + err);
        });
 }
 
