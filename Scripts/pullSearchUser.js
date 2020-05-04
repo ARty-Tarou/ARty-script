@@ -5,7 +5,7 @@ module.exports = function(req, res){
   var searchWord = req.body.searchWord;
 
   //半角空白で区切る
-  var searchWords = str.split(' ');
+  var searchWords = searchWord.split(' ');
 
   //サブクラスの作成
   var NCMB = require('ncmb');
