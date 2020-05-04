@@ -1,5 +1,5 @@
-//他の人の投稿を検索してくるよ
-//正直、Yourほにゃほにゃ系はIDが送れれば不要かと
+//searchWordをもらってStickテーブルの検索をするよ
+//結果を返却するよ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
@@ -13,19 +13,5 @@ module.exports = function(req, res){
 
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
-
-  var stick = ncmb.DataStore('Stick');
-
-  stick.equalTo("userId", userId)
-       .order("createDate", true)
-       .fetchAll()
-       .then(function(results){
-         res.status(200)
-            .json(results);
-       })
-       .catch(function(err){
-         res.status(500)
-            .send("Error : " + err);
-       });
 
 }

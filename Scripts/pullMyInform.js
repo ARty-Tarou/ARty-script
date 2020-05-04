@@ -1,4 +1,7 @@
+//userIdを受け取る
+//情報を調べる
 module.exports = function(req, res){
+  //送られてきた情報を受け取る
   var userId = req.body.userId;
 
   //サブクラスの作成
