@@ -37,7 +37,7 @@ function saveStick(req, res){
        .set("stampName", fileName)
        .set("userId", userId)
        .save()
-       .then(function(stick){
+       .then(function(res){
          //console.log("Aman0002");
          //res.status(200).send("success!");
          myStamp.set("stampName", stampName)
@@ -45,7 +45,7 @@ function saveStick(req, res){
                 .save()
                 .then(function(stick){
                   res.status(200)
-                     .send("success!");
+                     .send("mystamp save success!");
                 })
                 .catch(function(err){
                   res.status(500)

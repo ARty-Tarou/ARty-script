@@ -33,7 +33,7 @@ module.exports = function(req, res){
       });
 
   stick.equalTo("objectId", stickId)
-       .fetchAll()
+       .fetch()
        .then(function(stick){
          stick.setIncrement("good", 1);
          return stick.update();

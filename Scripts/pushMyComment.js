@@ -19,6 +19,7 @@ module.exports = function(req, res){
   var Comment = ncmb.DataStore('Comment');
   var comment = new Comment();
 
+  //detailはコメントの内容
   comment.set("userId", userId)
          .set("stickId", stickId)
          .set("detail", detail)

@@ -30,6 +30,6 @@ module.exports = function(req, res){
        })
        .catch(function(err){
          res.status(500)
-            .send("Error : " + err);
+            .send("stick fetch error : " + err);
        });
 }

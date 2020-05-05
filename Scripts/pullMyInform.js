@@ -15,6 +15,7 @@ module.exports = function(req, res){
   var ncmb = new NCMB(applicationKey, clientKey);
 
   var userDetails = ncmb.DataStore('UserDetails');
+
   userDetails.equalTo("userId", userId)
              .fetchAll()
              .then(function(results){
@@ -23,6 +24,6 @@ module.exports = function(req, res){
              })
              .catch(function(err){
                res.status(500)
-                  .send("Error : " + send);
+                  .send("userDetails fetch error : " + send);
              });
 }

@@ -4,12 +4,13 @@ module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
   var informs = [];
+  var userInform = [];
   var informs[0] = req.body.userName;
   var informs[1] = req.body.password;
   var informs[2] = req.body.mailAddress;
-  var informs[3] = req.body.birthday;
-  var informs[4] = req.body.iconImageId;
-  var informs[5] = req.body.selfIntroduction;
+  var userInform[0] = req.body.birthday;
+  var userInform[1] = req.body.iconImageName;
+  var userInform[2] = req.body.selfIntroduction;
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -20,5 +21,49 @@ module.exports = function(req, res){
 
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
+  var user = ncmb.DataStore('user');
+  var userDetails = ncmb.DataStore('UserDetails');
+
+  user.equalTo("objectId", userId)
+      .fetch()
+      .then(function(result){
+        result.set("userName", inform[0])
+              .set("password", inform[1])
+              .set("mailAddress", imform[2])
+              .update()
+              .then(function(res){
+                res.status(200)
+                   .send("user save success");
+              })
+              .catch(function(err){
+                res.status(500)
+                   .send("user save error : " + err);
+              });
+      })
+      .catch(function(err){
+        res.status(500)
+           .send("user fetch error : " + err);
+      });
+
+  userDetails.equalTo("objectId", userId)
+             .fetch()
+             .then(function(result){
+               result.set("birthDay", userInform[0])
+                     .set("userImageName", userInform[1])
+                     .set("selfIntroduction", userInform[2])
+                     .update()
+                     .then(function(res){
+                       res.status(200)
+                          .send("userDetail save success");
+                     })
+                     .catch(function(err){
+                       res.status(500)
+                          .send("userDetail save error : " + err);
+                     });
+             })
+             .catch(function(err){
+               res.status(500)
+                  .send("userDetail fetch error : " + err);
+             });
 
 }
