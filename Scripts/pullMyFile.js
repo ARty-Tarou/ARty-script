@@ -21,8 +21,11 @@ module.exports = function(req, res){
              }).then((base64Data) => {
                //res.send(base64Data)
                res.status(200)
-                  .json(base64Data);
-             })
+                  .json({data: base64Data});
+             }).catch((err) => {
+               res.status(500)
+                  .error("file encode error : " + err);
+             });
            })
            .catch(function(err){
              res.status(500)
