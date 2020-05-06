@@ -5,7 +5,7 @@ module.exports = function(req, res){
   var searchWord = req.body.searchWord;
 
   //半角空白で区切る
-  var searchWords = searchWord.split(' ');
+  var searchWords = searchWord.split('\s');
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -17,17 +17,17 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
 
-  var user = ncmb.DataStore('user');
+  //var user = ncmb.DataStore('user');
 
-  user.in("userName", searchWords)
-      .fetchAll()
-      .then(function(results){
-        res.status(200)
-           .json(results);
-      })
-      .catch(function(err){
-        res.status(500)
-           .send("user fetch error : " + err);
-      });
+  ncmb.User.in("userName", searchWords)
+           .fetchAll()
+           .then(function(results){
+             res.status(200)
+                .json(results);
+           })
+           .catch(function(err){
+             res.status(500)
+                .send("user fetch error : " + err);
+           });
 
 }

@@ -28,6 +28,7 @@ module.exports = function(req, res){
                  res.status(500)
                     .send("stick update error : " + err);
                });
+         //res.status(200).send("stick fetch success");
        })
        .catch(function(err){
          res.status(500)

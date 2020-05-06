@@ -5,7 +5,7 @@ module.exports = function(req, res){
   var searchWord = req.body.searchWord;
 
   //半角空白で文字列を区切る
-  var searchWords = searchWord.split(' ');
+  var searchWords = searchWord.split('\s');
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -26,7 +26,7 @@ module.exports = function(req, res){
   //サブクエリを作成する
   for (var i = 0, i < searchWords.length; i++){
 
-    searchWord = "/^[\u30a0-\u30ff\u3040-\u309f\u3005-\u3006\u30e0-\u9fcfa-zA-Z0-9!\"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]*[" + searchWord + "][\u30a0-\u30ff\u3040-\u309f\u3005-\u3006\u30e0-\u9fcfa-zA-Z0-9!\"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]*$/";
+    searchWord = "/^[\u30a0-\u30ff\u3040-\u309f\u3005-\u3006\u30e0-\u9fcfa-zA-Z0-9!\"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]*[" + searchWords[i] + "][\u30a0-\u30ff\u3040-\u309f\u3005-\u3006\u30e0-\u9fcfa-zA-Z0-9!\"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]*$/";
 
     subQuerys[i] = stick.regularExpressionTo("detail", searchWord);
 

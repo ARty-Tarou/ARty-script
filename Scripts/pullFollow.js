@@ -1,6 +1,6 @@
 module.exports = function(req, res){
   //送られてきたデータを取得
-  var stickId = req.body.stickId;
+  var userId = req.body.userId;
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -12,20 +12,17 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
 
-  var stick = ncmb.DataStore('Stick');
+  var follow = ncmb.DataStore('Follow');
 
-  stick.equalTo("objectId", stickId)
-       .fetch()
-       .then(function(result){
-         result.setIncrement("good", 1);
-         return result.update();
-       })
-       .then(function(result){
+  folow.equalTo("followerId", userId)
+       .fetchAll()
+       .then(function(results){
          res.status(200)
-            .send("stick update success");
+            .json(results);
        })
        .catch(function(err){
          res.status(500)
-            .send("stick update error : " + err);
+            .send("follow fetch error : " + err);
        });
+
 }

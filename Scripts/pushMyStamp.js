@@ -22,7 +22,7 @@ module.exports = function(req, res){
   myStamp.set("stampName", stampName)
          .set("userId", userId)
          .save()
-         .then(function(res){
+         .then(function(myStamp){
            res.status(200)
               .send("myStamp save success");
          })

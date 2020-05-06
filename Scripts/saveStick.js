@@ -39,23 +39,14 @@ function saveStick(req, res){
        .save()
        .then(function(res){
          //console.log("Aman0002");
-         //res.status(200).send("success!");
-         myStamp.set("stampName", stampName)
-                .set("userId", userId)
-                .save()
-                .then(function(stick){
-                  res.status(200)
-                     .send("mystamp save success!");
-                })
-                .catch(function(err){
-                  res.status(500)
-                     .send("myStamp save error! Error : " + err);
-                })
+         res.status(200)
+            .send("stick save success!");
        })
        .catch(function(err){
          res.status(500)
             .send("stick save error! Error : " + err);
        });
+
 }
 
 module.exports = saveStick;
