@@ -12,25 +12,24 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
 
-  ncmb.File.download(fileName)
-           .then(function(fileData){
-             new Promise((resolve, reject) => {
+  new Promise((resolve, reject) => {
+    ncmb.File.download(fileName)
+             .then(function(fileData){
                const encodeData = Buffer.from(fileData);
                const base64Data = encodeData.toString('base64');
                resolve(base64Data);
-             }).then((base64Data) => {
-               //res.send(base64Data)
-               res.status(200)
-                  .json({data: base64Data});
-             }).catch((err) => {
+             })
+             .catch(function(err){
                res.status(500)
-                  .error("file encode error : " + err);
+                  .send("file fetch error : " + err);
              });
-           })
-           .catch(function(err){
-             res.status(500)
-                .send("file fetch error : " + err);
-           });
+  }).then((base64Data) => {
+    res.status(200)
+       .json({data: base64Data});
+  }).catch((err) => {
+    res.status(500)
+       .send("file encode error : " + err);
+  });
 
 /*
   ncmb.File.equalTo("fileName", fileName)
@@ -43,7 +42,33 @@ module.exports = function(req, res){
              res.status(500)
                 .send("File fetch error : " + err);
            });
-           let data = {data : base64Data};
-           let dataJson = JSON.stringify(data);
+
+   let data = {data : base64Data};
+   let dataJson = JSON.stringify(data);
+
+   new Promise((resolve, reject) => {
+     let jsonData = {data : base64Data};
+     let dataJson = JSON.stringify(jsonData);
+     resolve(dataJson);
+   }).then((dataJson) => {
+     res.status(200)
+        .json(dataJson);
+   }).catch((err) => {
+     res.status(500)
+        .error("file encode error : " + err);
+   });
+
+   new Promise((resolve, reject) => {
+     const encodeData = Buffer.from(fileData);
+     const base64Data = encodeData.toString('base64');
+     resolve(base64Data);
+   }).then((base64Data) => {
+     //res.send(base64Data)
+     return res.status(200)
+               .json({data: base64Data});
+   }).catch((err) => {
+     res.status(500)
+        .error("file encode error : " + err);
+   });
 */
 }

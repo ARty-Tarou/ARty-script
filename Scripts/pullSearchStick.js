@@ -5,7 +5,7 @@ module.exports = function(req, res){
   var searchWord = req.body.searchWord;
 
   //半角空白で文字列を区切る
-  var searchWords = searchWord.split('\s');
+  var searchWords = searchWord.split(/\s/);
 
   //サブクラスの作成
   var NCMB = require('ncmb');

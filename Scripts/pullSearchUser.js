@@ -5,7 +5,7 @@ module.exports = function(req, res){
   var searchWord = req.body.searchWord;
 
   //半角空白で区切る
-  var searchWords = searchWord.split('\s');
+  var searchWords = searchWord.split(/\s/);
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -18,6 +18,17 @@ module.exports = function(req, res){
   var ncmb = new NCMB(applicationKey, clientKey);
 
   //var user = ncmb.DataStore('user');
+
+/*
+  new Promise((resolve, reject) => {
+    var str = String(Array.isArray(searchWords));
+    resolve(str);
+  }).then((str) => {
+    res.send(str);
+  }).catch(() => {
+    res.send("error");
+  })
+*/
 
   ncmb.User.in("userName", searchWords)
            .fetchAll()
