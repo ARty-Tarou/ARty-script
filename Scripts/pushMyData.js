@@ -1,3 +1,11 @@
+//自分のユーザーデータが変更された際に動く
+/*
+渡してほしいもの：userのobjectId（userId）
+                userのuserName（userName）
+                userのpassword（password）
+                userのmailAddress（mailAddress）
+*/
+//返ってくるもの：メッセージ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

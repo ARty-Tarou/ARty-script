@@ -1,3 +1,6 @@
+//GoodしたときにStickのGoodを1増やす
+//渡してほしいもの：stickのobjectId（stickId）
+//返ってくるもの：メッセージ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var stickId = req.body.stickId;

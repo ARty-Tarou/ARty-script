@@ -1,5 +1,11 @@
-//個人情報を変更するときに使用するよ。
-//アルゴリズム未定
+//個人の詳細な情報を変更するときに使用するよ。
+/*
+渡してほしいもの：userのobjectId（userId）
+                userの誕生日（birthday）
+                userのアイコンのfileデータのfileName（iconImageName）
+                userの自己紹介（selfIntroduction）
+*/
+//返ってくるもの：メッセージ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

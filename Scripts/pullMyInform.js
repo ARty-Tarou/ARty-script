@@ -1,5 +1,6 @@
-//userIdを受け取る
-//情報を調べる
+//自分の詳細情報を取得するもの
+//渡してほしいもの：userのobjectId（userId）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきた情報を受け取る
   var userId = req.body.userId;

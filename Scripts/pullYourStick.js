@@ -1,5 +1,6 @@
 //他の人の投稿を検索してくるよ
-//正直、Yourほにゃほにゃ系はIDが送れれば不要かと
+//渡してほしいもの：userのobjectId（userId）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

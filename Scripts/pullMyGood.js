@@ -1,4 +1,6 @@
 //自分がいいねしたStickを検索して返そうと思ってるもの
+//渡してほしいもの：userのobjectId（userId）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

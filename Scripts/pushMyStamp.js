@@ -1,5 +1,10 @@
 //MyStampに追加とかのボタンを押したときに動く
 //MyStampテーブルにデータを保存する
+/*
+渡してほしいもの：userのobjectId（userId）
+                stampのfileデータのfileName（stampName）
+*/
+//返ってくるもの：メッセージ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

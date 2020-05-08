@@ -1,6 +1,7 @@
 //他の人のマイページを訪れたとき
 //その人がいいねしたStickをとってくるよ
-//hidden的なもので各ページにユーザーのIDを持てていたらいらないかも
+//渡してほしいもの：userのobjectId（userId）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

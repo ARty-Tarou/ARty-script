@@ -1,3 +1,6 @@
+//fileのfileNameを受け取りファイルのデータを受け取るもの
+//渡してほしいもの：fileのfileName（fileName）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var fileName = req.body.fileName;

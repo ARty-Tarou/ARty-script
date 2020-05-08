@@ -1,6 +1,7 @@
-//トレンドをとるよ。
-//numberOfViewsや現在の時刻をうまく使って取ろうかな
-//アルゴリズム未定
+//トレンドをとるよ。(投稿日時を新しい順に並べそれを見られた数が多い順に並べ替える)
+//最大10件（変更可）
+//渡してほしいもの：
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -15,7 +16,7 @@ module.exports = function(req, res){
   var stick = ncmb.DataStore('Stick');
 
   stick.order("updateDate", true)
-       .order("numberOfViews")
+       .order("numberOfViews", true)
        .limit(10)
        .fetchAll()
        .then(function(results){

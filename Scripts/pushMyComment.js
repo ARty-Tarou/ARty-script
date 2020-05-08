@@ -1,5 +1,11 @@
 //Commentを投稿したときに動く
 //データストアに格納するよ
+/*
+  渡してほしいもの：userのobjectId（userId）
+                  stickのobjectId（stickId）
+                  コメントのテキストデータ（detail）
+*/
+//返ってくるもの：メッセージ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

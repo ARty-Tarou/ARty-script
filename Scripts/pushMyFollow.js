@@ -1,5 +1,10 @@
 //フォローした時に動く
 //Folowテーブルにカラムを作成
+/*
+渡してほしいもの：userのobjectId（followerId）
+                フォローしたいuserのobjectId（followedUserId）
+*/
+//返ってくるもの：メッセージ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var followerId = req.body.followerId;

@@ -1,5 +1,6 @@
-//Stickを検索し返すよ
-//resultsで受け取れるのか分からない
+//自分関連のStickを検索し返すよ
+//渡してほしいもの：userのobjectId（userId）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

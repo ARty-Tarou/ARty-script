@@ -1,5 +1,10 @@
 //Goodしたときに動くメソッドだよ
-//GoodテーブルとStickテーブルに更新をかける？
+//Goodテーブルにカラムを作成
+/*
+渡してほしいもの：userのobjectId（userId）
+                stickのobjectId（stickId）
+*/
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

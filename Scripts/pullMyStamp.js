@@ -1,5 +1,6 @@
 //myStampに登録したものを持ってくる
-//結局fileNameで検索かけてデータを引っ張るのはアプリサイドやけど
+//渡してほしいもの：userのobjectId（userId）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

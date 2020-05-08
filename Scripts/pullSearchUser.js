@@ -1,5 +1,6 @@
 //searchWordをもらってUserを検索
-//結果を返却する
+//渡してほしいもの：検索したい文字列（例：酒 飲みたい）（searchWord）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var searchWord = req.body.searchWord;
@@ -17,7 +18,18 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
 
-  //var user = ncmb.DataStore('user');
+  ncmb.User.in("userName", searchWords)
+           .fetchAll()
+           .then(function(results){
+             res.status(200)
+                .json(results);
+           })
+           .catch(function(err){
+             res.status(500)
+                .send("user fetch error : " + err);
+           });
+
+//var user = ncmb.DataStore('user');
 
 /*
   new Promise((resolve, reject) => {
@@ -29,16 +41,5 @@ module.exports = function(req, res){
     res.send("error");
   })
 */
-
-  ncmb.User.in("userName", searchWords)
-           .fetchAll()
-           .then(function(results){
-             res.status(200)
-                .json(results);
-           })
-           .catch(function(err){
-             res.status(500)
-                .send("user fetch error : " + err);
-           });
 
 }

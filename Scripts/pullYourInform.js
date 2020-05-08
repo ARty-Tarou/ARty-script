@@ -1,6 +1,6 @@
-//他の人のマイページを構成するのに必要かと
-//思うよ。
-//やはり、その人のIDが欲しいかも
+//他の人のマイページを構成するのに必要かと思われる詳細データを取得
+//渡してほしいもの：userのobjectId（userId）
+//返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

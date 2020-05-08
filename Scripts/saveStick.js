@@ -1,5 +1,11 @@
 //Stickを保存するためのスクリプト
 //StampのStickかStampArtのStickかの判断をどうつけるか不明
+/*
+渡してほしいもの：userのobjectId（userId）
+                添付されてるstampのfileデータのfileName（fileName）
+                stickのテキストデータ（detail）
+*/
+//返ってくるもの：json型のデータ
 function saveStick(req, res){
   //日付計算で使う
   var moment = require('moment');
