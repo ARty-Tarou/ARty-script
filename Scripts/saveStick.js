@@ -14,12 +14,16 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
 
-  var Stick = ncmb.DataStore('Stick');
-  var stick = new Stick({detail: detail, good: 0, numberOfViews: 0, userId: userId});
-
   if(flag == 0){
     var stampName = req.body.stampName;
 
+    var Stick = ncmb.DataStore('Stick');
+    var stick = new Stick({detail: detail,
+                           good: 0,
+                           numberOfViews: 0,
+                           userId: userId,
+                           stamp: true
+                         });
     var StampStick = ncmb.DataStore('StampStick');
     var stampStick = new StampStick({stampName: stampName});
 
@@ -41,7 +45,14 @@ module.exports = function(req, res){
     //deleteDate作成
     var nowdate = moment();
     var deleteDate = nowdate.add(7, 'd');
-  
+
+    var Stick = ncmb.DataStore('Stick');
+    var stick = new Stick({detail: detail,
+                           good: 0,
+                           numberOfViews: 0,
+                           userId: userId,
+                           stamp: false
+                         });
     var stampArtName = req.body.stampArtName;
     var stampName = req.body.stampName;
     //var 空間データ = req.body.空間データ;
