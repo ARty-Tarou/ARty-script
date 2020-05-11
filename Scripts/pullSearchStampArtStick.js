@@ -18,7 +18,7 @@ module.exports = function(req, res){
 
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
-  var stick = ncmb.DataStore('Stick');
+  var stick = ncmb.DataStore('StampArtStick');
 
   var j = 0;
   var flag = 0;
@@ -50,4 +50,5 @@ module.exports = function(req, res){
          res.status(500)
             .send("stick fetch error : " + err);
        });
+
 }

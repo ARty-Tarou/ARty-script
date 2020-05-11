@@ -18,7 +18,7 @@ module.exports = function(req, res){
 
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
-  var stick = ncmb.DataStore('Stick');
+  var stick = ncmb.DataStore('StampStick');
 
   var j = 0;
   var flag = 0;
@@ -50,4 +50,21 @@ module.exports = function(req, res){
          res.status(500)
             .send("stick fetch error : " + err);
        });
+
+//サブクエリを格納する配列の宣言
+//var subQuerys = [];
+
+//配列の長さ分のループを回すよ
+//正規表現で必要な文字列を作成
+//サブクエリを作成する
+/*
+for (var i = 0, i < searchWords.length; i++){
+
+ searchWord = "/^[\u30a0-\u30ff\u3040-\u309f\u3005-\u3006\u30e0-\u9fcfa-zA-Z0-9!\"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]*[" + searchWords[i] + "][\u30a0-\u30ff\u3040-\u309f\u3005-\u3006\u30e0-\u9fcfa-zA-Z0-9!\"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]*$/";
+
+ subQuerys[i] = stick.regularExpressionTo("detail", searchWord);
+
+}
+*/
+
 }

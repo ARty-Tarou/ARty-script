@@ -17,7 +17,7 @@ module.exports = function(req, res){
 
   //フォローテーブルとスティックテーブル、グッドテーブルのインスタンスの生成
   var follow = ncmb.DataStore('Follow');
-  var sticks = ncmb.DataStore('Stick');
+  var stick = ncmb.DataStore('Stick');
   var good = ncmb.DataStore('Good');
 
   //フォロワーIDにカレントユーザーのIDがあるものを調べる
@@ -37,15 +37,15 @@ module.exports = function(req, res){
   var subquery3 = stick.equalTo("userId", userId);
 
   //スティックテーブルからフォローしている人物のStickを検索し日付順に並び替え表示
-  sticks.or([subquery1, subquery2, subquery3])
-        .order("createDate", true)
-        .fetchAll()
-        .then(function(results){
-          res.status(200)
-             .json(results);
-        })
-        .catch(function(err){
-          res.status(500)
-             .send("stick fetch error : " + err);
-        });
+  stick.or([subquery1, subquery2, subquery3])
+       .order("createDate", true)
+       .fetchAll()
+       .then(function(results){
+         res.status(200)
+            .json(results);
+       })
+       .catch(function(err){
+         res.status(500)
+            .send("stick fetch error : " + err);
+       });
 }
