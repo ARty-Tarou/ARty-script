@@ -27,43 +27,64 @@ module.exports = function(req, res){
 
   var userDetails = new UserDetails();
 
-  UserDetails.equalTo("userId", userId)
-             .fetch()
-             .then(function(result){
-               if(result.length > 0){
-                 result.set("birthday", birthday)
-                       .set("userId", userId)
-                       .set("iconImageName", iconImageName)
-                       .set("selfIntroduction", selfIntroduction)
-                       .update()
-                       .then(function(result){
-                         res.status(200)
-                            .send("userDetail update success");
-                       })
-                       .catch(function(err){
-                         res.status(500)
-                            .send("userDetail update error : " + err);
-                       });
-               }else{
-                 userDetails.set("birthday", birthday)
-                            .set("userId", userId)
-                            .set("iconImageName", iconImageName)
-                            .set("selfIntroduction", selfIntroduction)
-                            .save()
-                            .then(function(result){
-                              res.status(200)
-                                 .send("userDetail save success");
-                            })
-                            .catch(function(err){
-                              res.status(500)
-                                 .send("userDetail save error : " + err);
-                            });
-               }
+  //{key:{__type:"Pointer",className:"対象クラス名", objectId:"対象オブジェクトID"}}
 
-             })
-             .catch(function(err){
-               res.status(500)
-                  .send("userDetail fetch error : " + err);
-             });
+  Promise.resolve()
+         .then(function(){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+               ncmb.User.equalTo("objectId", userId)
+                        .fetch()
+                        .then(function(value){
+                          resolve(value);
+                        })
+                        .catch(function(err){
+                          res.status(500)
+                             .send("user fetch error : " + err);
+                        });
+             }, 1000);
+           });
+         })
+         .then(function(value){
+           UserDetails.equalTo("userId", userId)
+                      .fetch()
+                      .then(function(result){
+                        if(result.length > 0){
+                          result.set("birthday", birthday)
+                                .set("userId", userId)
+                                .set("iconImageName", iconImageName)
+                                .set("selfIntroduction", selfIntroduction)
+                                .set("userData", value)
+                                .update()
+                                .then(function(result){
+                                  res.status(200)
+                                     .send("userDetail update success");
+                                })
+                                .catch(function(err){
+                                  res.status(500)
+                                     .send("userDetail update error : " + err);
+                                });
+                        }else{
+                          userDetails.set("birthday", birthday)
+                                     .set("userId", userId)
+                                     .set("iconImageName", iconImageName)
+                                     .set("selfIntroduction", selfIntroduction)
+                                     .set("userData", value)
+                                     .save()
+                                     .then(function(result){
+                                       res.status(200)
+                                          .send("userDetail save success");
+                                     })
+                                     .catch(function(err){
+                                       res.status(500)
+                                          .send("userDetail save error : " + err);
+                                     });
+                        }
+                      })
+                      .catch(function(err){
+                        res.status(500)
+                           .send("userDetail fetch error : " + err);
+                      });
+         })
 
 }

@@ -18,6 +18,7 @@ module.exports = function(req, res){
   var userDetails = ncmb.DataStore('UserDetails');
 
   userDetails.equalTo("userId", userId)
+             .include("userData")
              .fetchAll()
              .then(function(results){
                res.status(200)

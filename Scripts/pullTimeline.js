@@ -42,6 +42,57 @@ module.exports = function(req, res){
        .order("createDate", true)
        .fetchAll()
        .then(function(results){
+         /*
+         var timeLine = [];
+         for(var i = 0; i < results.length; i++){
+           var object = results[i];
+           Promise.resolve()
+                  .then(function(){
+                    return new Promise(function(resolve, reject){
+                      setTimeout(function(){
+                        var id = object.userData.objectId;
+                        ncmb.User.equalTo("objectId", id)
+                                 .fetch()
+                                 .then(function(result){
+                                   object.userData = result;
+                                   resolve(object);
+                                 })
+                                 .catch(function(err){
+                                   res.status(500)
+                                      .send("user fetch error : " + err);
+                                 })
+                      }, 1000);
+                    });
+                  })
+                  .then(function(object){
+                    return new Promise(function(resolve, reject){
+                      setTimeout(function(){
+                        id = object.userDetails.objectId;
+                        var userDetails = ncmb.DataStore("userDetails");
+
+                        userDetails.equalTo("objectId", id)
+                                   .fetch()
+                                   .then(function(result){
+                                     object.userDetails = result;
+                                     resolve(object);
+                                   })
+                                   .catch(function(err){
+                                     res.status(500)
+                                        .send("userDetails fetch error : " + err);
+                                   })
+                      }, 1000);
+                    });
+                  })
+                  .then(function(object){
+                    return new Promise(function(resolve, reject){
+                      setTimeout(function(){
+                        timeline.push(object);
+                        resolve();
+                      }, 1000);
+                    });
+                  })
+         }
+         */
          res.status(200)
             .json(results);
        })

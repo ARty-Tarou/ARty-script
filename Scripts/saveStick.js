@@ -1,6 +1,7 @@
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
+  var userName = req.body.userName;
   var detail = req.body.detail;
   var flag = req.body.flag;
 
@@ -25,9 +26,20 @@ module.exports = function(req, res){
                            stamp: true
                          });
     var StampStick = ncmb.DataStore('StampStick');
-    var stampStick = new StampStick({stampName: stampName});
+    var stampStick = new StampStick({stampName: stampName, userName: userName});
+
+    /*
+    var relation = new ncmb.Relation();
+    relation.add(stampStick)
+    .add(value[0])
+    .add(value[1]);
+
+    stick.set("data", relation);
 
     stick.set("staticData", stampStick);
+    stick.set("userData", value[0]);
+    stick.set("userDetails", value[1]);
+    */
 
     stick.save()
          .then(function(result){
@@ -38,42 +50,55 @@ module.exports = function(req, res){
            res.status(500)
               .send("StampStick save error : " + err);
          });
-  }else{
-    //日付計算で使う
-    var moment = require('moment');
+    }else{
+      //日付計算で使う
+      var moment = require('moment');
 
-    //deleteDate作成
-    var nowdate = moment();
-    var deleteDate = nowdate.add(7, 'd');
+      //deleteDate作成
+      var nowdate = moment();
+      var deleteDate = nowdate.add(7, 'd');
 
-    var Stick = ncmb.DataStore('Stick');
-    var stick = new Stick({detail: detail,
-                           good: 0,
-                           numberOfViews: 0,
-                           userId: userId,
-                           stamp: false
-                         });
-    var stampArtName = req.body.stampArtName;
-    var stampName = req.body.stampName;
-    //var 空間データ = req.body.空間データ;
+      var Stick = ncmb.DataStore('Stick');
+      var stick = new Stick({detail: detail,
+                             good: 0,
+                             numberOfViews: 0,
+                             userId: userId,
+                             stamp: false
+                           });
+      var stampArtName = req.body.stampArtName;
+      var stampName = req.body.stampName;
+      //var 空間データ = req.body.空間データ;
 
-    var StampArtStick = ncmb.DataStore('StampArtStick');
-    var stampArtStick = new StampArtStick({stampArtName: stampArtName,
-                                           stampName: stampName,
-                                           deleteDate: deleteDate,
-                                           /*空間データ: 空間データ*/
-                                         });
+      var StampArtStick = ncmb.DataStore('StampArtStick');
+      var stampArtStick = new StampArtStick({stampArtName: stampArtName,
+                                             stampName: stampName,
+                                             deleteDate: deleteDate,
+                                             userName: userName,
+                                             /*空間データ: 空間データ*/
+                                           });
 
-    stick.set("staticData", stampArtStick);
+      /*
+      var relation = new ncmb.Relation();
+      relation.add(stampStick)
+      .add(value[0])
+      .add(value[1]);
 
-    stick.save()
-         .then(function(result){
-           res.status(200)
-              .send("StampArtStick save success");
-         })
-         .catch(function(err){
-           res.stauts(500)
-              .send("StampArtStick save error : " + err);
-         });
-  }
+      stick.set("data", relation);
+
+      stick.set("staticData", stampArtStick);
+      stick.set("userData", value[0]);
+      stick.set("userDetails", value[1]);
+      */
+
+      stick.save()
+           .then(function(result){
+             res.status(200)
+                .send("StampArtStick save success");
+           })
+           .catch(function(err){
+             res.stauts(500)
+                .send("StampArtStick save error : " + err);
+           });
+    }
+
 }
