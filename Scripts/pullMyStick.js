@@ -20,6 +20,7 @@ module.exports = function(req, res){
 
   //ユーザーIDが含まれているStickを検索
   stick.equalTo("userId", userId)
+       .include("staticData")
        .order("createDate", true)
        .fetchAll()
        .then(function(results){

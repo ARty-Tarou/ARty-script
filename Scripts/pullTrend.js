@@ -17,6 +17,7 @@ module.exports = function(req, res){
 
   stick.order("updateDate", true)
        .order("numberOfViews", true)
+       .include("staticData")
        .limit(10)
        .fetchAll()
        .then(function(results){

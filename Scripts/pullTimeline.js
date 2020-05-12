@@ -38,6 +38,7 @@ module.exports = function(req, res){
 
   //スティックテーブルからフォローしている人物のStickを検索し日付順に並び替え表示
   stick.or([subquery1, subquery2, subquery3])
+       .include("staticData")
        .order("createDate", true)
        .fetchAll()
        .then(function(results){

@@ -25,6 +25,7 @@ module.exports = function(req, res){
   var searchResult = [];
 
   stick.order("createDate", true)
+       .include("staticData")
        .fetchAll()
        .then(function(results){
          //res.json(results);

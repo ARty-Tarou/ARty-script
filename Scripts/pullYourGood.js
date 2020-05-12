@@ -22,6 +22,7 @@ module.exports = function(req, res){
   var goods = good.equalTo("userId", userId);
 
   stick.select("objectId", "stickId", goods)
+       .include("staticData")
        .order("createDate", true)
        .fetchAll()
        .then(function(results){

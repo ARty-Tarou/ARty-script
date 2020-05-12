@@ -18,6 +18,7 @@ module.exports = function(req, res){
   var stick = ncmb.DataStore('Stick');
 
   stick.equalTo("userId", userId)
+       .include("staticData")
        .order("createDate", true)
        .fetchAll()
        .then(function(results){

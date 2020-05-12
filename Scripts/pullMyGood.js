@@ -24,6 +24,7 @@ module.exports = function(req, res){
 
   //Stickを検索
   stick.select("objectId", "stickId", goods)
+       .include("staticData")
        .order("createDate", true)
        .fetchAll()
        .then(function(results){
