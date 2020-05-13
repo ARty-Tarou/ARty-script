@@ -1,9 +1,11 @@
 //GoodしたときにStickのGoodを1増やす
 //渡してほしいもの：stickのobjectId（stickId）
+//                userのobjectId（userId）
 //返ってくるもの：メッセージ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var stickId = req.body.stickId;
+  var userId = req.body.userId;
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -17,18 +19,33 @@ module.exports = function(req, res){
 
   var stick = ncmb.DataStore('Stick');
 
-  stick.equalTo("objectId", stickId)
-       .fetch()
-       .then(function(result){
-         result.setIncrement("good", 1);
-         return result.update();
-       })
-       .then(function(result){
-         res.status(200)
-            .send("stick update success");
-       })
-       .catch(function(err){
-         res.status(500)
-            .send("stick update error : " + err);
-       });
+  var Good = ncmb.DataStore('Good');
+
+  var good = new Good();
+
+  good.set("stickId", stickId)
+      .set("userId", userId)
+      .save()
+      .then(function(result){
+        stick.equalTo("objectId", stickId)
+             .fetch()
+             .then(function(result){
+               result.setIncrement("good", 1);
+               return result.update();
+             })
+             .then(function(result){
+               res.status(200)
+                  .send("stick update success");
+             })
+             .catch(function(err){
+               res.status(500)
+                  .send("stick update error : " + err);
+             });
+      })
+      .catch(function(err){
+        res.status(500)
+           .send("good save error : " + err);
+      });
+
+
 }

@@ -49,41 +49,36 @@ module.exports = function(req, res){
            UserDetails.equalTo("userId", userId)
                       .fetch()
                       .then(function(result){
-                        if(result.length > 0){
                           result.set("birthday", birthday)
                                 .set("userId", userId)
                                 .set("iconImageName", iconImageName)
                                 .set("selfIntroduction", selfIntroduction)
                                 .set("userData", value)
-                                .update()
-                                .then(function(result){
-                                  res.status(200)
-                                     .send("userDetail update success");
-                                })
-                                .catch(function(err){
-                                  res.status(500)
-                                     .send("userDetail update error : " + err);
-                                });
-                        }else{
-                          userDetails.set("birthday", birthday)
-                                     .set("userId", userId)
-                                     .set("iconImageName", iconImageName)
-                                     .set("selfIntroduction", selfIntroduction)
-                                     .set("userData", value)
-                                     .save()
-                                     .then(function(result){
-                                       res.status(200)
-                                          .send("userDetail save success");
-                                     })
-                                     .catch(function(err){
-                                       res.status(500)
-                                          .send("userDetail save error : " + err);
-                                     });
-                        }
+                                .set("numberOfFollow", result.numberOfFollow)
+                                .set("numberOfFollowed", result.numberOfFollowed);
+                                return result.update();
+                      })
+                      .then(function(result){
+                        res.status(200)
+                           .send("userDetails update success");
                       })
                       .catch(function(err){
-                        res.status(500)
-                           .send("userDetail fetch error : " + err);
+                        userDetails.set("birthday", birthday)
+                                   .set("userId", userId)
+                                   .set("iconImageName", iconImageName)
+                                   .set("selfIntroduction", selfIntroduction)
+                                   .set("userData", value)
+                                   .set("numberOfFollow", 0)
+                                   .set("numberOfFollowed", 0)
+                                   .save()
+                                   .then(function(result){
+                                     res.status(200)
+                                        .send("userDetail save success");
+                                   })
+                                   .catch(function(err){
+                                     res.status(500)
+                                        .send("userDetail save error : " + err);
+                                   });
                       });
          })
 

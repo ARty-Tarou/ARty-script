@@ -21,14 +21,40 @@ module.exports = function(req, res){
   var ncmb = new NCMB(applicationKey, clientKey);
 
   var Follow = ncmb.DataStore('Follow');
+  var followerDetail = ncmb.DataStore('UserDetails');
+  var followedUserDetail = ncmb.DataStore('UserDetails');
   var follow = new Follow();
 
   follow.set("followerId", followerId)
         .set("followedUserId", followedUserId)
         .save()
         .then(function(follow){
-          res.status(200)
-             .send("follow save success");
+          followerDetail.equalTo("userId", followerId)
+                        .fetch()
+                        .then(function(result){
+                          result.setIncrement("numberOfFollow", 1)
+                          return result.update();
+                        })
+                        .then(function(result){
+                          followedUserDetail.equalTo("userId", followedUserId)
+                                            .fetch()
+                                            .then(function(result){
+                                              result.setIncrement("numberOfFollowed", 1)
+                                              return result.update();
+                                            })
+                                            .then(function(result){
+                                              res.status(200)
+                                                 .send("All object save success");
+                                            })
+                                            .catch(function(err){
+                                              res.status(500)
+                                                 .send("followedUserDetail save error : " + err);
+                                            });
+                        })
+                        .catch(function(err){
+                          res.status(500)
+                             .send("followerDetail save error : ", + err);
+                        });
         })
         .catch(function(err){
           res.status(500)
