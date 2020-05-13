@@ -13,12 +13,28 @@ module.exports = function(req, res){
   var ncmb = new NCMB(applicationKey, clientKey);
 
   var stampStick = ncmb.DataStore('stampStick');
+  var stick = ncmb.DataStore('Stick');
 
   stampStick.equalTo("stampName", stampName)
             .fetch()
             .then(function(result){
-              res.status(200)
-                 .json(result);
+              var id = result.objectId;
+              stick.equalTo("stamp", true)
+                   .fetchAll()
+                   .then(function(results){
+                     for(var i = 0; i < results.length; i++){
+                       var object = results[i];
+                       var staticData = object.staticData;
+                       if(staticData.objectId == id){
+                         res.status(200)
+                            .json(object);
+                       }
+                     }
+                   })
+                   .catch(function(err){
+                     res.status(500)
+                        .send("stick fetch error : " + err);
+                   });
             })
             .catch(function(err){
               res.status(500)

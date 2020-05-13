@@ -25,19 +25,22 @@ module.exports = function(req, res){
 
   //自分がGoodしたStickのIDを検索
   var goods = good.equalTo("userId", userId);
+  var followerGoods = good.select("userId", "userId", ids);
 
   //サブクエリの作成を行う
   /*
     フォローしている人間のStick
+    フォローしている人間がGoodしたStick
     自分がGoodしたStick
     自分が投稿したStick
   */
   var subquery1 = stick.select("userId", "folowedUserId", ids);
   var subquery2 = stick.select("objectId", "stickId", goods);
   var subquery3 = stick.equalTo("userId", userId);
+  var subquery4 = stick.select("objectId", "stickId", followerGoods);
 
   //スティックテーブルからフォローしている人物のStickを検索し日付順に並び替え表示
-  stick.or([subquery1, subquery2, subquery3])
+  stick.or([subquery1, subquery2, subquery3, subquery4])
        .include("staticData")
        .order("createDate", true)
        .fetchAll()
