@@ -16,16 +16,56 @@ module.exports = function(req, res){
   var ncmb = new NCMB(applicationKey, clientKey);
 
   var follow = ncmb.DataStore('Follow');
+  var userDetails = ncmb.DataStore('UserDetails');
 
-  follow.equalTo("followerId", userId)
-        .fetchAll()
-        .then(function(results){
-          res.status(200)
-             .json(results);
-        })
-        .catch(function(err){
-          res.status(500)
-             .send("follow fetch error : " + err);
-        });
+  var resultFollow = [];
+  var ids = [];
+
+  Promise.resolve()
+         .then(function(){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+               follow.equalTo("followerId", userId)
+                     .fetchAll()
+                     .then(function(followResults){
+                       resolve(followResults);
+                     })
+                     .catch(function(err){
+                       res.status(500)
+                          .send("follow fetch error : " + err);
+                     });
+             }, 1000);
+           });
+         })
+         .then(function(followResults){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+               for(var i = 0; i < followResults.length; i++){
+                 var object = followResults[i];
+
+                 ids.push(object.followedUserId);
+               }
+               resolve(ids);
+             }, 1000);
+           });
+         })
+         .then(function(ids){
+           userDetails.in("userId", ids)
+                      .include("userData")
+                      .fetchAll()
+                      .then(function(userResults){
+                        res.status(200)
+                           .json(userResults);
+                      })
+                      .catch(function(err){
+                        res.status(500)
+                           .send("userDetails fetch error : " + err);
+                      });
+         })
+         .catch(function(err){
+           res.status(500)
+              .json("resultFollow make error : " + err);
+         });
+
 
 }

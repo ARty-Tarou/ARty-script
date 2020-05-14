@@ -36,10 +36,11 @@ module.exports = function(req, res){
 
     stick.set("data", relation);
 
-    stick.set("staticData", stampStick);
     stick.set("userData", value[0]);
     stick.set("userDetails", value[1]);
     */
+
+    stick.set("staticData", stampStick);
 
     stick.save()
          .then(function(result){
@@ -85,10 +86,11 @@ module.exports = function(req, res){
 
       stick.set("data", relation);
 
-      stick.set("staticData", stampArtStick);
       stick.set("userData", value[0]);
       stick.set("userDetails", value[1]);
       */
+
+      stick.set("staticData", stampArtStick);
 
       stick.save()
            .then(function(result){
