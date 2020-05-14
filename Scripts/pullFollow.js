@@ -17,15 +17,15 @@ module.exports = function(req, res){
 
   var follow = ncmb.DataStore('Follow');
 
-  folow.equalTo("followerId", userId)
-       .fetchAll()
-       .then(function(results){
-         res.status(200)
-            .json(results);
-       })
-       .catch(function(err){
-         res.status(500)
-            .send("follow fetch error : " + err);
-       });
+  follow.equalTo("followerId", userId)
+        .fetchAll()
+        .then(function(results){
+          res.status(200)
+             .json(results);
+        })
+        .catch(function(err){
+          res.status(500)
+             .send("follow fetch error : " + err);
+        });
 
 }
