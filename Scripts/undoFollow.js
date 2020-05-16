@@ -1,8 +1,8 @@
-//フォローした時に動く
-//Folowテーブルにカラムを作成
+//フォローを解除した時に動く
+//Folowテーブルにカラムを削除、フォロワー数等を1減らす
 /*
 渡してほしいもの：userのobjectId（followerId）
-                フォローしたいuserのobjectId（followedUserId）
+                フォローを解除したいuserのobjectId（followedUserId）
 */
 //返ってくるもの：メッセージ
 module.exports = function(req, res){

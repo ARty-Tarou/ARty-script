@@ -42,7 +42,7 @@ module.exports = function(req, res){
                for(var i = 0; i < followResults.length; i++){
                  var object = followResults[i];
 
-                 ids.push(object.followedUserId);
+                 ids.push(object.followerId);
                }
                resolve(ids);
              }, 1000);

@@ -1,3 +1,6 @@
+//stampNameから元のスタンプのStickを探すよ。
+//渡してほしいもの：stampのfileName（stampName）
+//返すもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var stampName = req.body.stampName;

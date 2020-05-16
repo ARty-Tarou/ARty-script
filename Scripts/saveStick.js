@@ -1,3 +1,11 @@
+//Stickを投稿した時に動くスクリプト
+/*
+  渡してほしいもの：userのobjectId（userId）
+  　　　　　　　　　userのuserName（userName）
+                  stickのテキストデータ（detail）
+                  stampかstampArtの判定に使う（detail）
+*/
+//返すもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;

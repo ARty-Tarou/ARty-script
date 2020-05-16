@@ -1,3 +1,6 @@
+//stickのobjectIdを使ってstckへのGoodを探してくるよ
+//渡してほしいもの：stickのobjectId（stickId）
+//返すもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var stickId = req.body.stickId;
@@ -14,7 +17,7 @@ module.exports = function(req, res){
 
   var good = ncmb.DataStore('Good');
 
-  good.equalTo("stickId", userId)
+  good.equalTo("stickId", stickId)
       .fetchAll()
       .then(function(results){
         res.status(200)

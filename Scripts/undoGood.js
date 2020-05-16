@@ -1,4 +1,4 @@
-//Goodを取り消したときにStickのGoodを1増やす
+//Goodを取り消したときにStickのGoodを1減らし、該当のGoodのカラムを削除
 //渡してほしいもの：stickのobjectId（stickId）
 //                userのobjectId（userId）
 //返ってくるもの：メッセージ

@@ -13,6 +13,17 @@ module.exports = function(req, res){
   var iconImageName = req.body.iconImageName;
   var selfIntroduction = req.body.selfIntroduction;
 
+  //！はfalseか0かundefinedかnull
+  if(!birthday){
+    birthday = "";
+  }
+  if(!iconImageName){
+    iconImageName = "FirstIcon";
+  }
+  if(!selfIntroduction){
+    selfIntroduction = "よろしくお願いします";
+  }
+
   //サブクラスの作成
   var NCMB = require('ncmb');
 

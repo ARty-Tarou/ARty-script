@@ -1,3 +1,6 @@
+//stickのobjectIdからそのstickへのCommentを引っ張ってくるよ
+//渡してほしいもの：stickのobjectId（stickId）
+//返すもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var stickId = req.body.stickId;
