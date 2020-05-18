@@ -1,10 +1,17 @@
 //searchWordを使ってStickテーブルの検索して取得（最大30件）
-//っさらに読み込みとかのボタンを押された時の機能を検討中
+//さらに読み込みとかのボタンを押された時の機能を検討中
 //渡してほしいもの：検索したい文字列（例：酒 飲みたい）（searchWord）
 //返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var searchWord = req.body.searchWord;
+  var skip = req.body.skip;
+
+  if(!skip){
+    skip = 0;
+  }
+
+  skip = Number(skip);
 
   //半角空白で文字列を区切る
   var searchWords = searchWord.split(/\s/);
@@ -18,17 +25,20 @@ module.exports = function(req, res){
 
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
-  var stick = ncmb.DataStore('StampStick');
+  var stick = ncmb.DataStore('Stick');
 
   var j = 0;
   var flag = 0;
   var searchResult = [];
 
-  stick.order("createDate", true)
+  stick.equalTo("stamp", true)
+       .order("createDate", true)
+       .include("staticData")
+       .skip(skip)
        .fetchAll()
        .then(function(results){
          //res.json(results);
-         for (var i = 0; j < 30 && i < results.length; i++){
+         for (var i = 0; searchResult.length < 30 && i < results.length; i++){
            var object = results[i];
            //res.json(object);
            //var detail = object.get("detail")
@@ -36,35 +46,17 @@ module.exports = function(req, res){
              if(flag == 0 && object.get("detail").includes(word)){
                //if(flag == 0){
                  //res.json(object)
-                 searchResult[j] = object;
+                 searchResult.push(object);
                  flag = 1;
-                 j = j + 1;
                }
              }
            flag = 0;
          }
          res.status(200)
-            .json(searchResult);
+            .json({result: searchResult, skip: i});
        })
        .catch(function(err){
          res.status(500)
             .send("stick fetch error : " + err);
        });
-
-//サブクエリを格納する配列の宣言
-//var subQuerys = [];
-
-//配列の長さ分のループを回すよ
-//正規表現で必要な文字列を作成
-//サブクエリを作成する
-/*
-for (var i = 0, i < searchWords.length; i++){
-
- searchWord = "/^[\u30a0-\u30ff\u3040-\u309f\u3005-\u3006\u30e0-\u9fcfa-zA-Z0-9!\"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]*[" + searchWords[i] + "][\u30a0-\u30ff\u3040-\u309f\u3005-\u3006\u30e0-\u9fcfa-zA-Z0-9!\"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^_`{|}~]*$/";
-
- subQuerys[i] = stick.regularExpressionTo("detail", searchWord);
-
-}
-*/
-
 }

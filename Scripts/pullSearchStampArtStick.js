@@ -5,6 +5,13 @@
 module.exports = function(req, res){
   //送られてきたデータを取得
   var searchWord = req.body.searchWord;
+  var skip = req.body.skip;
+
+  if(!skip){
+    skip = 0;
+  }
+
+  skip = Number(skip);
 
   //半角空白で文字列を区切る
   var searchWords = searchWord.split(/\s/);
@@ -18,17 +25,20 @@ module.exports = function(req, res){
 
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
-  var stick = ncmb.DataStore('StampArtStick');
+  var stick = ncmb.DataStore('Stick');
 
   var j = 0;
   var flag = 0;
   var searchResult = [];
 
-  stick.order("createDate", true)
+  stick.equalTo("stamp", false)
+       .order("createDate", true)
+       .include("staticData")
+       .skip(skip)
        .fetchAll()
        .then(function(results){
          //res.json(results);
-         for (var i = 0; j < 30 && i < results.length; i++){
+         for (var i = 0; searchResult.length < 30 && i < results.length; i++){
            var object = results[i];
            //res.json(object);
            //var detail = object.get("detail")
@@ -36,19 +46,17 @@ module.exports = function(req, res){
              if(flag == 0 && object.get("detail").includes(word)){
                //if(flag == 0){
                  //res.json(object)
-                 searchResult[j] = object;
+                 searchResult.push(object);
                  flag = 1;
-                 j = j + 1;
                }
              }
            flag = 0;
          }
          res.status(200)
-            .json(searchResult);
+            .json({result: searchResult, skip: i});
        })
        .catch(function(err){
          res.status(500)
             .send("stick fetch error : " + err);
        });
-
 }

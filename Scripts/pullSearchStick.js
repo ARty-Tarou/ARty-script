@@ -45,7 +45,7 @@ module.exports = function(req, res){
            flag = 0;
          }
          res.status(200)
-            .json(searchResult);
+            .json({result: searchResult, skip: i);
        })
        .catch(function(err){
          res.status(500)

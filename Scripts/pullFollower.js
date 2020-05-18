@@ -1,9 +1,11 @@
-//自分をフォローしている人間一覧を取得
+//ユーザーをフォローしている人間一覧を取得
 //渡してほしいもの：userのobjectId（userId）
+//　　　　　　　　　currentUserのobjectId（currentUserId）
 //返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
+  var currentUserId = req.body.currentUserId;
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -16,9 +18,12 @@ module.exports = function(req, res){
   var ncmb = new NCMB(applicationKey, clientKey);
 
   var follow = ncmb.DataStore('Follow');
+  var myFollow = ncmb.DataStore('Follow');
+  var userDetails = ncmb.DataStore('UserDetails');
 
-  var resultFollow = [];
-  var ids = [];
+  var followIds = [];
+
+  var resultJson = [];
 
   Promise.resolve()
          .then(function(){
@@ -27,54 +32,84 @@ module.exports = function(req, res){
                follow.equalTo("followedUserId", userId)
                      .fetchAll()
                      .then(function(followResults){
-                       resolve(followResults);
+                       for(var i = 0; i < followResults.length; i++){
+                         var object = followResults[i];
+
+                         followIds.push(object.followedUserId);
+                       }
+                       resolve(followIds);
                      })
                      .catch(function(err){
                        res.status(500)
                           .send("follow fetch error : " + err);
                      });
-             }, 1000);
+             }, 1);
            });
          })
-         .then(function(followResults){
+         .then(function(followIds){
            return new Promise(function(resolve, reject){
              setTimeout(function(){
-               for(var i = 0; i < followResults.length; i++){
-                 var object = followResults[i];
-
-                 ids.push(object.followerId);
-               }
-               resolve(ids);
-             }, 1000);
+               //res.status(200)
+                  //.json(followIds);
+               userDetails.in("userId", followIds)
+                          .include("userData")
+                          .fetchAll()
+                          .then(function(userResults){
+                            //res.status(200)
+                               //.json(userResults);
+                            resolve(userResults);
+                          })
+                          .catch(function(err){
+                            res.status(500)
+                               .send("userDetails fetch error : " + err);
+                          });
+             }, 1);
            });
          })
-         .then(function(ids){
-           userDetails.in("userId", ids)
-                      .include("userData")
-                      .fetchAll()
-                      .then(function(userResults){
-                        res.status(200)
-                           .json(userResults);
-                      })
-                      .catch(function(err){
-                        res.status(500)
-                           .send("userDetails fetch error : " + err);
-                      });
+         .then(function(userResults){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+                 myFollow.equalTo("followerId", currentUserId)
+                         .fetchAll()
+                         .then(function(myFollowResults){
+                           var flag = 0;
+                           for(var i = 0; i < userResults.length; i++){
+                             var followDetailObject = userResults[i];
+
+                             for(var j = 0; j < myFollowResults.length; j++){
+                               var myFollowObject = myFollowResults[j];
+
+                               if(followDetailObject.userId == myFollowObject.followedUserId && flag == 0){
+                                 resultJson.push({userDetail: followDetailObject, follow: true});
+
+                                 flag = 1;
+                               }
+                             }
+                             if(flag == 0){
+                               resultJson.push({userDetail: followDetailObject, follow: false});
+                             }else{
+                               flag = 0;
+                             }
+                           }
+                           resolve(resultJson);
+                         })
+                         .catch(function(err){
+                           res.status(500)
+                              .send("myFollow fetch error : " + err);
+                         });
+             }, 1);
+           });
+         })
+         .then(function(resultJson){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+               res.status(200)
+                  .json(resultJson);
+             }, 1);
+           });
          })
          .catch(function(err){
            res.status(500)
               .json("resultFollow make error : " + err);
          });
-/*
-  follow.equalTo("followedUserId", userId)
-        .fetchAll()
-        .then(function(results){
-          res.status(200)
-             .json(results);
-        })
-        .catch(function(err){
-          res.status(500)
-             .send("follow fetch error : " + err);
-        });
-*/
 }

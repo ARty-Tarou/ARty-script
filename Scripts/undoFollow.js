@@ -20,10 +20,9 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
 
-  var Follow = ncmb.DataStore('Follow');
+  var follow = ncmb.DataStore('Follow');
   var followerDetail = ncmb.DataStore('UserDetails');
   var followedUserDetail = ncmb.DataStore('UserDetails');
-  var follow = new Follow();
 
   follow.equalTo("followerId", followerId)
         .equalTo("followedUserId", followedUserId)
