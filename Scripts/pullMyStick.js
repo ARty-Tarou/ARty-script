@@ -22,23 +22,89 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
 
-  //スティックテーブルのインスタンスを生成
+  //グッドテーブルとスティックテーブルのインスタンスを生成
+  var good = ncmb.DataStore('Good');
   var stick = ncmb.DataStore('Stick');
+  var userDetails = ncmb.DataStore('UserDetails');
 
-  var stickResult = [];
+  var stickIds = [];
+  var resultJson = [];
 
-  //ユーザーIDが含まれているStickを検索
+  var flag = 0;
+
+  //Stickを検索
   stick.equalTo("userId", userId)
        .include("staticData")
-       .order("createDate", true)
+       .order("updateDate", true)
        .skip(skip)
        .fetchAll()
-       .then(function(results){
-         for(var i = 0; i < 30 && i < results.length; i++){
-           stickResult.push(results[i]);
-         }
-         res.status(200)
-            .json({stickData: stickResult, skip: i});
+       .then(function(stickResults){
+         Promise.resolve()
+                .then(function(){
+                  return new Promise(function(resolve, reject){
+                    setTimeout(function(){
+                      for(var i = 0; i < stickResults.length; i++){
+                        var object = stickResults[i];
+
+                        stickIds.push(object.objectId);
+                      }
+                      resolve(stickResults);
+                    }, 1);
+                  });
+                })
+                .then(function(stickResults){
+                  return new Promise(function(resolve, reject){
+                    setTimeout(function(){
+                      userDetails.equalTo("userId", userId)
+                                 .include("userData")
+                                 .fetch()
+                                 .then(function(userDetailResult){
+                                   resolve([stickResults, userDetailResult]);
+                                 })
+                                 .catch(function(err){
+                                   res.status(500)
+                                      .send("userDetails fetch error : " + err);
+                                 });
+                    }, 1);
+                  });
+                })
+                .then(function(value){
+                  var stickResults = value[0];
+                  return new Promise(function(resolve, reject){
+                    setTimeout(function(){
+                      good.equalTo("userId", userId)
+                          .in("stickId", stickIds)
+                          .fetchAll()
+                          .then(function(goodResults){
+                            for(var i = 0; i < stickResults.length; i++){
+                              var stickObject = stickResults[i];
+                              for(var j = 0; flag == 0 && j < goodResults.length; j++){
+                                var goodObject = goodResults[j];
+                                if(goodObject.stickId == stickObject.objectId){
+                                  resultJson.push({stickData: stickObject, userDetailData: value[1], follow: false, good: true});
+                                  flag = 1;
+                                }
+                              }
+                              if(flag == 0){
+                                resultJson.push({stickData: stickObject, userDetailData: value[1], follow: false, good: false});
+                                flag = 1;
+                              }
+                              flag = 0;
+                            }
+                            res.status(200)
+                               .json({result: resultJson, skip: stickResults.length});
+                          })
+                          .catch(function(err){
+                            res.status(500)
+                               .send("good fetch error : " + err);
+                          });
+                    }, 1);
+                  });
+                })
+                .catch(function(err){
+                  res.status(500)
+                     .send("resultJson make error : " + err);
+                });
        })
        .catch(function(err){
          res.status(500)

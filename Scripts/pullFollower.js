@@ -36,7 +36,7 @@ module.exports = function(req, res){
                        for(var i = 0; i < followResults.length; i++){
                          var object = followResults[i];
 
-                         followIds.push(object.followedUserId);
+                         followIds.push(object.followerId);
                        }
                        resolve(followIds);
                      })

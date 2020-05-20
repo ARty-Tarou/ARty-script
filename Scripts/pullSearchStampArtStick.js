@@ -29,12 +29,14 @@ module.exports = function(req, res){
   var stick = ncmb.DataStore('Stick');
   var userDetails = ncmb.DataStore('UserDetails');
   var follow = ncmb.DataStore('Follow');
+  var good = ncmb.DataStore('Good');
 
   var j = 0;
   var flag = 0;
 
   var searchResult = [];
   var userIds = [];
+  var stickIds = [];
 
   var resultJson = [];
 
@@ -43,7 +45,7 @@ module.exports = function(req, res){
            return new Promise(function(resolve, reject){
              setTimeout(function(){
                stick.equalTo("stamp", false)
-                    .order("createDate", true)
+                    .order("updateDate", true)
                     .include("staticData")
                     .skip(skip)
                     .fetchAll()
@@ -59,12 +61,13 @@ module.exports = function(req, res){
                               //res.json(object)
                               searchResult.push(object);
                               userIds.push(object.userId);
+                              stickIds.push(object.objectId);
                               flag = 1;
                             }
                           }
                         flag = 0;
                       }
-                      resolve([userIds, len]);
+                      resolve(len);
                     })
                     .catch(function(err){
                       res.status(500)
@@ -73,15 +76,15 @@ module.exports = function(req, res){
              }, 1);
            });
          })
-         .then(function(value){
+         .then(function(len){
            return new Promise(function(resolve, reject){
              setTimeout(function(){
                flag = 0;
-               userDetails.in("userId", value[0])
+               userDetails.in("userId", userIds)
                           .include("userData")
                           .fetchAll()
                           .then(function(userResults){
-                            resolve([value[0], value[1], userResults]);
+                            resolve([len, userResults]);
                           })
                           .catch(function(err){
                             res.status(500)
@@ -93,32 +96,11 @@ module.exports = function(req, res){
          .then(function(value){
            return new Promise(function(resolve, reject){
              setTimeout(function(){
-               var userResults = value[2];
-               follow.in("followedUserId", value[0])
+               follow.in("followedUserId", userIds)
                      .equalTo("followerId", currentUserId)
                      .fetchAll()
                      .then(function(followResults){
-                       for(var i = 0; i < searchResult.length; i++){
-                         var searchObject = searchResult[i];
-                         for(var j = 0; flag == 0 && j < userResults.length; j++){
-                           var userObject = userResults[j];
-                           if(userObject.userId == searchObject.userId){
-                             for(var k = 0; flag == 0 && k < followResults.length; k++){
-                               var followObject = followResults[k];
-                               if(followObject.followedUserId == searchObject.userId){
-                                 resultJson.push({stickData: searchObject, userDetailData: userObject, follow: true});
-                                 flag = 1;
-                               }
-                             }
-                             if(flag == 0){
-                               resultJson.push({stickData: searchObject, userDetailData: userObject, follow: false});
-                             }
-                           }
-                         }
-                         flag = 0;
-                       }
-                       res.status(200)
-                          .json({result: resultJson, skip: value[1]});
+                       resolve([value[0], value[1], followResults]);
                      })
                      .catch(function(err){
                        res.status(500)
@@ -127,9 +109,65 @@ module.exports = function(req, res){
              }, 1);
            });
          })
+         .then(function(value){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+              var userResults = value[1];
+              var followResults = value[2];
+              good.equalTo("userId", currentUserId)
+                  .in("stickId", stickIds)
+                  .fetchAll()
+                  .then(function(goodResults){
+                    for(var i = 0; i < searchResult.length; i++){
+                      var searchObject = searchResult[i];
+                      for(var j = 0; flag == 0 && j < userResults.length; j++){
+                        var userObject = userResults[j];
+                        if(userObject.userId == searchObject.userId){
+                          for(var k = 0; flag == 0 && k < followResults.length; k++){
+                            var followObject = followResults[k];
+                            if(followObject.followedUserId == searchObject.userId){
+                              for(var l = 0; flag == 0 && l < goodResults.length; l++){
+                                var goodObject = goodResults[l];
+                                if(goodObject.stickId == searchObject.objectId){
+                                  resultJson.push({stickData: searchObject, userDetailData: userObject, follow: true, good: true});
+                                  flag = 1;
+                                }
+                              }
+                              if(flag == 0){
+                                resultJson.push({stickData: searchObject, userDetailData: userObject, follow: true, good: false});
+                                flag = 1;
+                              }
+                            }
+                          }
+                          if(flag == 0){
+                            for(var l = 0; l < goodResults.length; l++){
+                              var goodObject = goodResults[l];
+                              if(goodObject.stickId == searchObject.objectId && flag == 0){
+                                resultJson.push({stickData: searchObject, userDetailData: userObject, follow: false, good: true});
+                                flag = 1;
+                              }
+                            }
+                            if(flag == 0){
+                              resultJson.push({stickData: searchObject, userDetailData: userObject, follow: false, good: false});
+                              flag = 1;
+                            }
+                          }
+                        }
+                      }
+                      flag = 0;
+                    }
+                    res.status(200)
+                       .json({result: resultJson, skip: value[0]});
+                  })
+                  .catch(function(err){
+                    res.status(500)
+                       .send("good fetch error : " + err);
+                  });
+             }, 1);
+           });
+         })
          .catch(function(err){
            res.status(500)
               .send("resultJson make error : " + err);
          });
-
 }
