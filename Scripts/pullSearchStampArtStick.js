@@ -6,12 +6,13 @@ module.exports = function(req, res){
   //送られてきたデータを取得
   var searchWord = req.body.searchWord;
   var skip = req.body.skip;
+  var currentUserId = req.body.currentUserId;
 
-  if(!skip){
+  if(skip == ""){
     skip = 0;
+  }else{
+    skip = Number(skip);
   }
-
-  skip = Number(skip);
 
   //半角空白で文字列を区切る
   var searchWords = searchWord.split(/\s/);
@@ -26,37 +27,109 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
   var stick = ncmb.DataStore('Stick');
+  var userDetails = ncmb.DataStore('UserDetails');
+  var follow = ncmb.DataStore('Follow');
 
   var j = 0;
   var flag = 0;
-  var searchResult = [];
 
-  stick.equalTo("stamp", false)
-       .order("createDate", true)
-       .include("staticData")
-       .skip(skip)
-       .fetchAll()
-       .then(function(results){
-         //res.json(results);
-         for (var i = 0; searchResult.length < 30 && i < results.length; i++){
-           var object = results[i];
-           //res.json(object);
-           //var detail = object.get("detail")
-           for(var word of searchWords){
-             if(flag == 0 && object.get("detail").includes(word)){
-               //if(flag == 0){
-                 //res.json(object)
-                 searchResult.push(object);
-                 flag = 1;
-               }
-             }
-           flag = 0;
-         }
-         res.status(200)
-            .json({result: searchResult, skip: i});
-       })
-       .catch(function(err){
-         res.status(500)
-            .send("stick fetch error : " + err);
-       });
+  var searchResult = [];
+  var userIds = [];
+
+  var resultJson = [];
+
+  Promise.resolve()
+         .then(function(){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+               stick.equalTo("stamp", false)
+                    .order("createDate", true)
+                    .include("staticData")
+                    .skip(skip)
+                    .fetchAll()
+                    .then(function(results){
+                      //res.json(results);
+                      for (var len = 0; searchResult.length < 30 && len < results.length; len++){
+                        var object = results[len];
+                        //res.json(object);
+                        //var detail = object.get("detail")
+                        for(var word of searchWords){
+                          if(flag == 0 && object.get("detail").includes(word)){
+                            //if(flag == 0){
+                              //res.json(object)
+                              searchResult.push(object);
+                              userIds.push(object.userId);
+                              flag = 1;
+                            }
+                          }
+                        flag = 0;
+                      }
+                      resolve([userIds, len]);
+                    })
+                    .catch(function(err){
+                      res.status(500)
+                         .send("stick fetch error : " + err);
+                    });
+             }, 1);
+           });
+         })
+         .then(function(value){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+               flag = 0;
+               userDetails.in("userId", value[0])
+                          .include("userData")
+                          .fetchAll()
+                          .then(function(userResults){
+                            resolve([value[0], value[1], userResults]);
+                          })
+                          .catch(function(err){
+                            res.status(500)
+                               .send("userDetail fetch error : " + err);
+                          });
+             }, 1);
+           });
+         })
+         .then(function(value){
+           return new Promise(function(resolve, reject){
+             setTimeout(function(){
+               var userResults = value[2];
+               follow.in("followedUserId", value[0])
+                     .equalTo("followerId", currentUserId)
+                     .fetchAll()
+                     .then(function(followResults){
+                       for(var i = 0; i < searchResult.length; i++){
+                         var searchObject = searchResult[i];
+                         for(var j = 0; flag == 0 && j < userResults.length; j++){
+                           var userObject = userResults[j];
+                           if(userObject.userId == searchObject.userId){
+                             for(var k = 0; flag == 0 && k < followResults.length; k++){
+                               var followObject = followResults[k];
+                               if(followObject.followedUserId == searchObject.userId){
+                                 resultJson.push({stickData: searchObject, userDetailData: userObject, follow: true});
+                                 flag = 1;
+                               }
+                             }
+                             if(flag == 0){
+                               resultJson.push({stickData: searchObject, userDetailData: userObject, follow: false});
+                             }
+                           }
+                         }
+                         flag = 0;
+                       }
+                       res.status(200)
+                          .json({result: resultJson, skip: value[1]});
+                     })
+                     .catch(function(err){
+                       res.status(500)
+                          .send("follow fetch error : " + err);
+                     });
+             }, 1);
+           });
+         })
+         .catch(function(err){
+           res.status(500)
+              .send("resultJson make error : " + err);
+         });
+
 }

@@ -1,4 +1,5 @@
 //ユーザーをフォローしている人間一覧を取得
+//カレントユーザーがそいつをフォローしてるかも返す
 //渡してほしいもの：userのobjectId（userId）
 //　　　　　　　　　currentUserのobjectId（currentUserId）
 //返ってくるもの：json型のデータ

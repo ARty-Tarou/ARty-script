@@ -33,16 +33,16 @@ module.exports = function(req, res){
         .then(function(result){
           followerDetail.equalTo("userId", followerId)
                         .fetch()
-                        .then(function(result){
-                          result.setIncrement("numberOfFollow", -1)
-                          return result.update();
+                        .then(function(followerResult){
+                          followerResult.setIncrement("numberOfFollow", -1)
+                          return followerResult.update();
                         })
                         .then(function(result){
                           followedUserDetail.equalTo("userId", followedUserId)
                                             .fetch()
-                                            .then(function(result){
-                                              result.setIncrement("numberOfFollowed", -1)
-                                              return result.update();
+                                            .then(function(followedUserResult){
+                                              followedUserResult.setIncrement("numberOfFollowed", -1)
+                                              return followedUserResult.update();
                                             })
                                             .then(function(result){
                                               res.status(200)

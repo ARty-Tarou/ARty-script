@@ -4,6 +4,13 @@
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
+  var skip = req.body.skip;
+
+  if(skip == ""){
+    skip = 0;
+  }else{
+    skip = Number(skip);
+  }
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -44,64 +51,65 @@ module.exports = function(req, res){
   var resultJson = [];
 
   //スティックテーブルからフォローしている人物のStickを検索し日付順に並び替え表示
-
-  Promise.resolve()
-         .then(function(){
-           return new Promise(function(resolve, reject){
-             setTimeout(function(){
-               stick.or([subquery1, subquery2, subquery3, subquery4])
-                    .include("staticData")
-                    .order("createDate", true)
-                    .fetchAll()
-                    .then(function(stickResults){
+  stick.or([subquery1, subquery2, subquery3, subquery4])
+       .include("staticData")
+       .order("createDate", true)
+       .skip(skip)
+       .limit(30)
+       .fetchAll()
+       .then(function(stickResults){
+         Promise.resolve()
+                .then(function(){
+                  return new Promise(function(resolve, reject){
+                    setTimeout(function(){
                       for(var i = 0; i < stickResults.length; i++){
                         var object = stickResults[i];
 
                         stickIds.push(object.userId);
                       }
                       resolve(stickResults);
-                    })
-                    .catch(function(err){
-                      res.status(500)
-                         .send("stick fetch error : " + err);
-                    });
-             }, 1);
-           });
-         })
-         .then(function(stickResults){
-           return new Promise(function(resolve, reject){
-             setTimeout(function(){
-               var flag = 0;
-               userDetails.in("userId", stickIds)
-                          .include("userData")
-                          .fetchAll()
-                          .then(function(userDetailResults){
-                            for(var i = 0; i < stickResults.length; i++){
-                              var stickObject = stickResults[i];
-                              for(var j = 0; flag == 0 && j < userDetailResults.length; j++){
-                                var userDetailObject = userDetailResults[j];
+                    }, 1);
+                  });
+                })
+                .then(function(stickResults){
+                  return new Promise(function(resolve, reject){
+                    setTimeout(function(){
+                      var flag = 0;
+                      userDetails.in("userId", stickIds)
+                                 .include("userData")
+                                 .fetchAll()
+                                 .then(function(userDetailResults){
+                                   for(var i = 0; i < stickResults.length; i++){
+                                     var stickObject = stickResults[i];
+                                     for(var j = 0; j < userDetailResults.length; j++){
+                                       var userDetailObject = userDetailResults[j];
 
-                                if(stickObject.userId == userDetailObject.userId){
-                                  resultJson.push({stickData: stickObject, userDetailData: userDetailObject});
-                                  flag = 1;
-                                }
-                              }
-                              flag = 0;
-                            }
-                            res.status(200)
-                               .json(resultJson);
-                          })
-                          .catch(function(err){
-                            res.status(500)
-                               .send("userDetails fetch error : " + err);
-                          });
-             }, 1)
-           });
-         })
-         .catch(function(err){
-           res.status(500)
-              .send("resultJson make error : " + err);
-         });
+                                       if(stickObject.userId == userDetailObject.userId && flag == 0){
+                                         resultJson.push({stickData: stickObject, userDetailData: userDetailObject});
+                                         flag = 1;
+                                       }
+                                     }
+                                     flag = 0;
+                                   }
+                                   res.status(200)
+                                      .json({result: resultJson, skip: stickResults.length});
+                                 })
+                                 .catch(function(err){
+                                   res.status(500)
+                                      .send("userDetails fetch error : " + err);
+                                 });
+                    }, 1);
+                  });
+                })
+                .catch(function(err){
+                  res.status(500)
+                     .send("resultJson make error : " + err);
+                });
+       })
+       .catch(function(err){
+         res.status(500)
+            .send("stick fetch error : " + err);
+       });
 
 
 }

@@ -4,6 +4,13 @@
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
+  var skip = req.body.skip;
+
+  if(skip == ""){
+    skip = 0;
+  }else{
+    skip = Number(skip);
+  }
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -22,14 +29,20 @@ module.exports = function(req, res){
   //GoodしたスティックのIDをユーザーIDを用いて検索
   var goods = good.equalTo("userId", userId);
 
+  var stickResult = [];
+
   //Stickを検索
   stick.select("objectId", "stickId", goods)
        .include("staticData")
        .order("createDate", true)
+       .skip(skip)
        .fetchAll()
        .then(function(results){
+         for(var i = 0; i < 30 && i < results.length; i++){
+           stickResult.push(results[i]);
+         }
          res.status(200)
-            .json(results);
+            .json({stickData: stickResult, skip: i});
        })
        .catch(function(err){
          res.status(500)
