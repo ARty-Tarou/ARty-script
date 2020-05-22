@@ -45,6 +45,8 @@ module.exports = function(req, res){
                 .then(function(){
                   return new Promise(function(resolve, reject){
                     setTimeout(function(){
+                      //res.status(200)
+                         //.json(stickResults);
                       for(var i = 0; i < stickResults.length; i++){
                         var object = stickResults[i];
 
@@ -57,6 +59,8 @@ module.exports = function(req, res){
                 .then(function(stickResults){
                   return new Promise(function(resolve, reject){
                     setTimeout(function(){
+                      //res.status(200)
+                         //.json(stickResults);
                       userDetails.equalTo("userId", userId)
                                  .include("userData")
                                  .fetch()
@@ -73,15 +77,19 @@ module.exports = function(req, res){
                 .then(function(value){
                   return new Promise(function(resolve, reject){
                     setTimeout(function(){
-                      var follow = true;
+                      //res.status(200)
+                        //.json(value);
+                      var followflag = true;
                       follow.equalTo("followedUserId", userId)
                             .equalTo("followerId", currentUserId)
                             .fetchAll()
                             .then(function(result){
+                              //res.status(200)
+                                 //.json(result);
                               if(!result.objectId){
-                                follow = false;
+                                followflag = false;
                               }
-                              resolve([value[0], value[1], follow);
+                              resolve([value[0], value[1], followflag]);
                             })
                             .catch(function(err){
                               res.status(200)
@@ -91,9 +99,9 @@ module.exports = function(req, res){
                   });
                 })
                 .then(function(value){
-                  var stickResults = value[0];
                   return new Promise(function(resolve, reject){
                     setTimeout(function(){
+                      var stickResults = value[0];
                       good.equalTo("userId", currentUserId)
                           .in("stickId", stickIds)
                           .fetchAll()

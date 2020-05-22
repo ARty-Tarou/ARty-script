@@ -12,7 +12,7 @@ module.exports = function(req, res){
   //インスタンスの生成
   var ncmb = new NCMB(applicationKey, clientKey);
 
-  var stampStick = ncmb.DataStore('stampStick');
+  var stampStick = ncmb.DataStore('StampStick');
   var stick = ncmb.DataStore('Stick');
 
   stampStick.equalTo("stampName", stampName)
@@ -20,6 +20,7 @@ module.exports = function(req, res){
             .then(function(result){
               var id = result.objectId;
               stick.equalTo("stamp", true)
+                   .include("staticData")
                    .fetchAll()
                    .then(function(results){
                      for(var i = 0; i < results.length; i++){
