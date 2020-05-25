@@ -48,6 +48,7 @@ module.exports = function(req, res){
                     .order("updateDate", true)
                     .include("staticData")
                     .skip(skip)
+                    .limit(30)
                     .fetchAll()
                     .then(function(results){
                       //res.json(results);

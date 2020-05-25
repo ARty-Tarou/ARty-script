@@ -53,7 +53,7 @@ module.exports = function(req, res){
                           res.status(500)
                              .send("user fetch error : " + err);
                         });
-             }, 1000);
+             }, 1);
            });
          })
          .then(function(value){

@@ -1,4 +1,4 @@
-//自分がいいねしたStickを検索して返そうと思ってるもの
+//自分の投稿を投稿日時の新しい順に取得する
 //渡してほしいもの：userのobjectId（userId）
 //返ってくるもの：json型のデータ
 module.exports = function(req, res){
@@ -25,19 +25,16 @@ module.exports = function(req, res){
   //グッドテーブルとスティックテーブルのインスタンスを生成
   var good = ncmb.DataStore('Good');
   var stick = ncmb.DataStore('Stick');
-  var follow = ncmb.DataStore('Follow');
   var userDetails = ncmb.DataStore('UserDetails');
 
-  //GoodしたスティックのIDをユーザーIDを用いて検索
-  var goods = good.equalTo("userId", userId);
-
-  var userIds = [];
+  var stickIds = [];
   var resultJson = [];
 
   var flag = 0;
 
   //Stickを検索
-  stick.select("objectId", "stickId", goods)
+  stick.equalTo("userId", userId)
+       .equalTo("stamp", true)
        .include("staticData")
        .order("updateDate", true)
        .skip(skip)
@@ -51,7 +48,7 @@ module.exports = function(req, res){
                       for(var i = 0; i < stickResults.length; i++){
                         var object = stickResults[i];
 
-                        userIds.push(object.userId);
+                        stickIds.push(object.objectId);
                       }
                       resolve(stickResults);
                     }, 1);
@@ -60,11 +57,11 @@ module.exports = function(req, res){
                 .then(function(stickResults){
                   return new Promise(function(resolve, reject){
                     setTimeout(function(){
-                      userDetails.in("userId", userIds)
+                      userDetails.equalTo("userId", userId)
                                  .include("userData")
-                                 .fetchAll()
-                                 .then(function(userDetailResults){
-                                   resolve([stickResults, userDetailResults]);
+                                 .fetch()
+                                 .then(function(userDetailResult){
+                                   resolve([stickResults, userDetailResult]);
                                  })
                                  .catch(function(err){
                                    res.status(500)
@@ -74,41 +71,35 @@ module.exports = function(req, res){
                   });
                 })
                 .then(function(value){
+                  var stickResults = value[0];
                   return new Promise(function(resolve, reject){
-                    var stickResults = value[0];
-                    var userDetailResults = value[1];
                     setTimeout(function(){
-                      follow.in("followedUserId", userIds)
-                            .equalTo("followerId", userId)
-                            .fetchAll()
-                            .then(function(followResults){
-                              for(var i = 0; i < stickResults.length; i++){
-                                var stickObject = stickResults[i];
-                                for(var j = 0; flag == 0 && j < userDetailResults.length; j++){
-                                  var userDetailObject = userDetailResults[j];
-                                  if(userDetailObject.userId == stickObject.userId){
-                                    for(var k = 0; flag == 0 && k < followResults.length; k++){
-                                      var followObject = followResults[k];
-                                      if(followObject.followedUserId == stickObject.userId){
-                                        resultJson.push({stickData: stickObject, userDetailData: userDetailObject, follow: true, good: true});
-                                        flag = 1;
-                                      }
-                                    }
-                                    if(flag == 0){
-                                      resultJson.push({stickData: stickObject, userDetailData: userDetailObject, follow: false, good: true});
-                                      flag = 1;
-                                    }
-                                  }
+                      good.equalTo("userId", userId)
+                          .in("stickId", stickIds)
+                          .fetchAll()
+                          .then(function(goodResults){
+                            for(var i = 0; i < stickResults.length; i++){
+                              var stickObject = stickResults[i];
+                              for(var j = 0; flag == 0 && j < goodResults.length; j++){
+                                var goodObject = goodResults[j];
+                                if(goodObject.stickId == stickObject.objectId){
+                                  resultJson.push({stickData: stickObject, userDetailData: value[1], follow: false, good: true});
+                                  flag = 1;
                                 }
-                                flag = 0;
                               }
-                              res.status(200)
-                                 .json({result: resultJson, skip: stickResults.length})
-                            })
-                            .catch(function(err){
-                              res.status(200)
-                                 .send("follow fetch error : " + err);
-                            });
+                              if(flag == 0){
+                                resultJson.push({stickData: stickObject, userDetailData: value[1], follow: false, good: false});
+                                flag = 1;
+                              }
+                              flag = 0;
+                            }
+                            res.status(200)
+                               .json({result: resultJson, skip: stickResults.length});
+                          })
+                          .catch(function(err){
+                            res.status(500)
+                               .send("good fetch error : " + err);
+                          });
                     }, 1);
                   });
                 })

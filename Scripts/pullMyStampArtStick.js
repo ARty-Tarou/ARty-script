@@ -1,9 +1,8 @@
-//他の人の投稿を検索してくるよ
+//自分の投稿を投稿日時の新しい順に取得する
 //渡してほしいもの：userのobjectId（userId）
 //返ってくるもの：json型のデータ
 module.exports = function(req, res){
   //送られてきたデータを取得
-  var currentUserId = req.body.currentUserId;
   var userId = req.body.userId;
   var skip = req.body.skip;
 
@@ -26,7 +25,6 @@ module.exports = function(req, res){
   //グッドテーブルとスティックテーブルのインスタンスを生成
   var good = ncmb.DataStore('Good');
   var stick = ncmb.DataStore('Stick');
-  var follow = ncmb.DataStore('Follow');
   var userDetails = ncmb.DataStore('UserDetails');
 
   var stickIds = [];
@@ -36,17 +34,17 @@ module.exports = function(req, res){
 
   //Stickを検索
   stick.equalTo("userId", userId)
+       .equalTo("stamp", false)
        .include("staticData")
        .order("updateDate", true)
        .skip(skip)
+       .limit(30)
        .fetchAll()
        .then(function(stickResults){
          Promise.resolve()
                 .then(function(){
                   return new Promise(function(resolve, reject){
                     setTimeout(function(){
-                      //res.status(200)
-                         //.json(stickResults);
                       for(var i = 0; i < stickResults.length; i++){
                         var object = stickResults[i];
 
@@ -59,8 +57,6 @@ module.exports = function(req, res){
                 .then(function(stickResults){
                   return new Promise(function(resolve, reject){
                     setTimeout(function(){
-                      //res.status(200)
-                         //.json(stickResults);
                       userDetails.equalTo("userId", userId)
                                  .include("userData")
                                  .fetch()
@@ -75,34 +71,10 @@ module.exports = function(req, res){
                   });
                 })
                 .then(function(value){
+                  var stickResults = value[0];
                   return new Promise(function(resolve, reject){
                     setTimeout(function(){
-                      //res.status(200)
-                        //.json(value);
-                      var followflag = true;
-                      follow.equalTo("followedUserId", userId)
-                            .equalTo("followerId", currentUserId)
-                            .fetchAll()
-                            .then(function(result){
-                              //res.status(200)
-                                 //.json(result);
-                              if(!result.objectId){
-                                followflag = false;
-                              }
-                              resolve([value[0], value[1], followflag]);
-                            })
-                            .catch(function(err){
-                              res.status(200)
-                                 .send("follow fetch error : " + err);
-                            });
-                    }, 1);
-                  });
-                })
-                .then(function(value){
-                  return new Promise(function(resolve, reject){
-                    setTimeout(function(){
-                      var stickResults = value[0];
-                      good.equalTo("userId", currentUserId)
+                      good.equalTo("userId", userId)
                           .in("stickId", stickIds)
                           .fetchAll()
                           .then(function(goodResults){
@@ -111,12 +83,12 @@ module.exports = function(req, res){
                               for(var j = 0; flag == 0 && j < goodResults.length; j++){
                                 var goodObject = goodResults[j];
                                 if(goodObject.stickId == stickObject.objectId){
-                                  resultJson.push({stickData: stickObject, userDetailData: value[1], follow: value[2], good: true});
+                                  resultJson.push({stickData: stickObject, userDetailData: value[1], follow: false, good: true});
                                   flag = 1;
                                 }
                               }
                               if(flag == 0){
-                                resultJson.push({stickData: stickObject, userDetailData: value[1], follow: value[2], good: false});
+                                resultJson.push({stickData: stickObject, userDetailData: value[1], follow: false, good: false});
                                 flag = 1;
                               }
                               flag = 0;
