@@ -9,6 +9,7 @@
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
+  var userName = req.body.userName;
   var birthday = req.body.birthday;
   var iconImageName = req.body.iconImageName;
   var selfIntroduction = req.body.selfIntroduction;
@@ -38,7 +39,15 @@ module.exports = function(req, res){
 
   var userDetails = new UserDetails();
 
+  var userResult;
+
   //{key:{__type:"Pointer",className:"対象クラス名", objectId:"対象オブジェクトID"}}
+
+  //ncmb.User.equalTo("objectId", userId)
+    //       .fetch()
+      //     .then(function(result){
+        //     result.set("usserName", userName)
+          // })
 
   Promise.resolve()
          .then(function(){
@@ -46,8 +55,13 @@ module.exports = function(req, res){
              setTimeout(function(){
                ncmb.User.equalTo("objectId", userId)
                         .fetch()
+                        .then(function(result){
+                          userResult = result;
+                          result.set("userName", userName);
+                          return result.update();
+                        })
                         .then(function(value){
-                          resolve(value);
+                          resolve(userResult);
                         })
                         .catch(function(err){
                           res.status(500)

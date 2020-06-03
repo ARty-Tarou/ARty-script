@@ -36,7 +36,7 @@ module.exports = function(req, res){
 
   //Stickを検索
   stick.equalTo("userId", userId)
-       .equalTo("stamp", flase)
+       .equalTo("stamp", false)
        .include("staticData")
        .order("updateDate", true)
        .skip(skip)
