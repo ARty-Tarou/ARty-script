@@ -29,7 +29,7 @@ module.exports = function(req, res){
   var userDetails = ncmb.DataStore('UserDetails');
 
   //GoodしたスティックのIDをユーザーIDを用いて検索
-  var goods = good.equalTo("userId", userId);
+  var goods = good.equalTo("userId", userId).order("createDate", true);
 
   var userIds = [];
   var resultJson = [];
@@ -39,7 +39,6 @@ module.exports = function(req, res){
   //Stickを検索
   stick.select("objectId", "stickId", goods)
        .include("staticData")
-       .order("updateDate", true)
        .skip(skip)
        .limit(30)
        .fetchAll()

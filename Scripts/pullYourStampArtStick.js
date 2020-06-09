@@ -38,7 +38,7 @@ module.exports = function(req, res){
   stick.equalTo("userId", userId)
        .equalTo("stamp", false)
        .include("staticData")
-       .order("updateDate", true)
+       .order("createDate", true)
        .skip(skip)
        .limit(30)
        .fetchAll()

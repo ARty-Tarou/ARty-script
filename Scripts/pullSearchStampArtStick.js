@@ -45,7 +45,7 @@ module.exports = function(req, res){
            return new Promise(function(resolve, reject){
              setTimeout(function(){
                stick.equalTo("stamp", false)
-                    .order("updateDate", true)
+                    .order("createDate", true)
                     .include("staticData")
                     .skip(skip)
                     .limit(30)
