@@ -9,9 +9,10 @@
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
-  var userName = req.body.userName;
+  //var userName = req.body.userName;
   var detail = req.body.detail;
   var flag = req.body.flag;
+  var fileName = req.body.fileName;
 
   //サブクラスの作成
   var NCMB = require('ncmb');
@@ -24,7 +25,7 @@ module.exports = function(req, res){
   var ncmb = new NCMB(applicationKey, clientKey);
 
   if(flag == 0){
-    var stampName = req.body.stampName;
+    var fileName = "s." + req.body.fileName;
 
     var Stick = ncmb.DataStore('Stick');
     var stick = new Stick({detail: detail,
@@ -34,7 +35,7 @@ module.exports = function(req, res){
                            stamp: true
                          });
     var StampStick = ncmb.DataStore('StampStick');
-    var stampStick = new StampStick({stampName: stampName, userName: userName});
+    var stampStick = new StampStick({fileName: fileName});
 
     /*
     var relation = new ncmb.Relation();
@@ -60,6 +61,33 @@ module.exports = function(req, res){
               .send("StampStick save error : " + err);
          });
     }else{
+      //stampArt用
+      var stampImageName = req.body.stampImageName;
+      var stampImageNumber = req.body.stampImageNumber;
+      var anchorName = req.body.anchorName;
+      var stampNumber = req.body.stampNumber;
+      var heightSize = req.body.heightSize;
+      var widthSize = req.body.widthSize;
+
+      var setStampData = [];
+      var stampImageData = [];
+
+      for(var i = 0; i < stampImageName.length; i++){
+        stampImageData.push({
+                              "stampImageName": stampImageName[i], 
+                              "stampImageNumber": stampImageNumber[i]
+                            });
+      }
+
+      for(var i = 0; i < anchorName.length; i++){
+        setStampData.push({
+                            "anchorName": anchorName[i], 
+                            "stampNumber": stampNumber[i], 
+                            "height": heightSize[i], 
+                            "width": widthSize[i]
+                          });
+      }
+
       //日付計算で使う
       var moment = require('moment');
 
@@ -74,15 +102,15 @@ module.exports = function(req, res){
                              userId: userId,
                              stamp: false
                            });
-      var stampArtName = req.body.stampArtName;
-      var stampName = req.body.stampName;
-      //var 空間データ = req.body.空間データ;
+      var fileName = "i." + req.body.fileName;
+      var worldMap = "a." + req.body.fileName;
 
       var StampArtStick = ncmb.DataStore('StampArtStick');
-      var stampArtStick = new StampArtStick({stampArtName: stampArtName,
-                                             stampName: stampName,
+      var stampArtStick = new StampArtStick({fileName: fileName,
+                                             worldMap: worldMap,
                                              deleteDate: deleteDate,
-                                             userName: userName,
+                                             setStampData: setStampData, 
+                                             stampImageData: stampImageData
                                              /*空間データ: 空間データ*/
                                            });
 

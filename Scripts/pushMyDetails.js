@@ -9,15 +9,15 @@
 module.exports = function(req, res){
   //送られてきたデータを取得
   var userId = req.body.userId;
-  var userName = req.body.userName;
-  var birthday = req.body.birthday;
+  //var userName = req.body.userName;
+  //var birthday = req.body.birthday;
   var iconImageName = req.body.iconImageName;
   var selfIntroduction = req.body.selfIntroduction;
 
   //！はfalseか0かundefinedかnull
-  if(!birthday){
-    birthday = "";
-  }
+  //if(!birthday){
+    //birthday = "";
+  //}
   if(!iconImageName){
     iconImageName = "FirstIcon";
   }
@@ -39,8 +39,6 @@ module.exports = function(req, res){
 
   var userDetails = new UserDetails();
 
-  var userResult;
-
   //{key:{__type:"Pointer",className:"対象クラス名", objectId:"対象オブジェクトID"}}
 
   //ncmb.User.equalTo("objectId", userId)
@@ -56,12 +54,7 @@ module.exports = function(req, res){
                ncmb.User.equalTo("objectId", userId)
                         .fetch()
                         .then(function(result){
-                          userResult = result;
-                          result.set("userName", userName);
-                          return result.update();
-                        })
-                        .then(function(value){
-                          resolve(userResult);
+                          resolve(result);
                         })
                         .catch(function(err){
                           res.status(500)
@@ -74,8 +67,7 @@ module.exports = function(req, res){
            UserDetails.equalTo("userId", userId)
                       .fetch()
                       .then(function(result){
-                          result.set("birthday", birthday)
-                                .set("userId", userId)
+                          result.set("userId", userId)
                                 .set("iconImageName", iconImageName)
                                 .set("selfIntroduction", selfIntroduction)
                                 .set("userData", value)
@@ -88,8 +80,7 @@ module.exports = function(req, res){
                            .send("userDetails update success");
                       })
                       .catch(function(err){
-                        userDetails.set("birthday", birthday)
-                                   .set("userId", userId)
+                        userDetails.set("userId", userId)
                                    .set("iconImageName", iconImageName)
                                    .set("selfIntroduction", selfIntroduction)
                                    .set("userData", value)
